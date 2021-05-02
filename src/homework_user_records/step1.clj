@@ -19,16 +19,18 @@
       (record-files/read-records filename {:delimiter delimiter})
       (throw (ex-info "Unsupported file extension" {:filename filename})))))
 
-(defn- gen-samples! [n-per-file]
-  (doseq [[filename delimiter] (map (fn [[extension delim]]
-                                      [(str "sample." extension) delim])
-                                    extension->delimiter)]
-    (let [records (repeatedly n-per-file record-gen/gen-record)
-          full-filename (str "resources/" filename)]
-      (io/make-parents full-filename)
-      (record-files/write-records! full-filename
-                                   {:delimiter delimiter
-                                    :records records}))))
+(defn gen-samples!
+  ([] (gen-samples! {}))
+  ([{:keys [num-samples] :or {num-samples 5}}]
+   (doseq [[filename delimiter] (map (fn [[extension delim]]
+                                       [(str "sample." extension) delim])
+                                     extension->delimiter)]
+     (let [records (repeatedly num-samples record-gen/gen-record)
+           full-filename (str "resources/" filename)]
+       (io/make-parents full-filename)
+       (record-files/write-records! full-filename
+                                    {:delimiter delimiter
+                                     :records records})))))
 
 (defn- file-exists? [filename]
   (.exists (io/as-file filename)))
@@ -40,7 +42,7 @@
        (mapcat read-file)))
 
 (comment
-  (gen-samples! 5)
+  (gen-samples!)
   (filename->extension "resources/sample.ssv")
   (read-file "resources/sample.psv")
   (read-all "resources/sample"))

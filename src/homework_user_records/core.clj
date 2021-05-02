@@ -1,5 +1,7 @@
 (ns homework-user-records.core
-  (:require [homework-user-records.step1 :as step1]))
+  (:import [java.io StringWriter])
+  (:require [homework-user-records.step1 :as step1]
+            [homework-user-records.record-files :as record-files]))
 
 (defn -main []
   (println "Hello World"))
@@ -15,10 +17,12 @@
          first)))
 
 (defn- print-records [records]
-  (doseq [rec records]
-    (println rec)))
+  (let [s-out (StringWriter.)]
+    (record-files/write-records! s-out {:delimiter ", "
+                                        :records records})
+    (println (.toString s-out))))
 
-(defn step1 [base-filename]
+(defn step1 [{:keys [base-filename] :or {base-filename "resources/sample"}}]
   (let [all-records (step1/read-all base-filename)]
     (println "=============Output 1=============")
     (print-records (sort-by (juxt :email :last-name)
