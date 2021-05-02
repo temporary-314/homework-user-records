@@ -6,16 +6,21 @@ This project uses Clojure Tools Deps, see [here](https://clojure.org/guides/gett
 
 ## Useful Commands
 
-Run Tests: `clj -A:test:test-runner`
+### Run Tests: 
+`clj -A:test:test-runner`
 
 
-Generate Sample Files: `clj -X:gen-samples`
+### Generate Sample Files: 
+`clj -X:gen-samples`
+
 This will cause three sample files to be generated with random user records 
 under the `resources` directory with names matching `sample.*`. 
 Existing files will be overwritten as applicable.
 
 
-Run Step 1 `clj -X:step-1`
+### Run Step 1 
+`clj -X:step-1`
+
 This will execute the code corresponding to the Step 1 prompt, reading the sample files.
 
 To override the files read, run `clj -X:step-1 :base-filename "resources/example"`
