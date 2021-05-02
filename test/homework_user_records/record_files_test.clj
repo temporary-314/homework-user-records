@@ -26,6 +26,7 @@
            (write-to-string {:delimiter delimiter
                              :records [example-record]}))
     "," "Smith,John,jsmith@gmail.com,Green,1/1/1999\n"
+    ", " "Smith, John, jsmith@gmail.com, Green, 1/1/1999\n"
     " " "Smith John jsmith@gmail.com Green 1/1/1999\n"
     "|" "Smith|John|jsmith@gmail.com|Green|1/1/1999\n"))
 
