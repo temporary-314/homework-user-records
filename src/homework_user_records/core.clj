@@ -1,10 +1,8 @@
 (ns homework-user-records.core
   (:import [java.io StringWriter])
   (:require [homework-user-records.step1 :as step1]
+            [homework-user-records.step2 :as step2]
             [homework-user-records.record-files :as record-files]))
-
-(defn -main []
-  (println "Hello World"))
 
 (defn- vec-directional-comparator [directions]
   (fn comparator [vec-a vec-b]
@@ -33,6 +31,13 @@
     (println "=============Output 3=============")
     (print-records (sort-by :last-name #(compare %2 %1)
                             all-records))))
+
+(defn- nillable-parse-int [x]
+  (when x
+    (Integer/parseInt x)))
+
+(defn -main [& [base-filename port]]
+  (step2/run-server base-filename (nillable-parse-int port)))
 
 (comment
   (step1 "resources/sample"))
