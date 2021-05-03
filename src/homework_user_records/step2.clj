@@ -2,9 +2,28 @@
   (:require [ring.adapter.jetty :as jetty]
             [ring.util.http-response :refer :all]
             [compojure.api.sweet :refer :all]
-            [homework-user-records.step1 :as step1]))
+            [homework-user-records.step1 :as step1]
+            [homework-user-records.record-files :as record-files]))
 
 (defonce ^:private records (atom []))
+
+(def ^:private base-content-type "text/plain+")
+
+(def ^:private augment->delimiter
+  {"csv" ", "
+   "psv" " | "
+   "ssv" " "})
+
+(def ^:private content-type->delimiter
+  (into {}
+        (map (fn [[augment delimiter]]
+               [(str base-content-type augment)
+                delimiter])
+             augment->delimiter)))
+
+(defn- read-records [body content-type]
+  (record-files/read-records body
+                             {:delimiter (content-type->delimiter content-type)}))
 
 (def ^:private app
   (api
@@ -17,9 +36,15 @@
        :no-doc true
        (moved-permanently "/api-docs"))
      (context "/records" []
-       (POST "/" []
-         :body [s]
-         (ok {:message "Not implemented yet"}))
+       (POST "/" {body :body
+                  content-type :content-type}
+         :swagger {:consumes (keys content-type->delimiter)
+                   :parameters {:body String}}
+         ;; The doc said to support single records,
+         ;; but supporting N was more featureful and easier
+         (let [new-records (read-records body content-type)]
+           (swap! records concat new-records)
+           (ok {:new-records new-records})))
        ;; Prompt didn't include direction of ordering and didn't match the step1 prompts
        (GET "/records/email" []
          (ok {:records (sort-by :email @records)}))
